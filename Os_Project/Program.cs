@@ -11,7 +11,7 @@ namespace Os_Project
             while(true)
             {
                 virtualDisk.initialize();
-
+                fatTable.printFatTable();
                 Console.Write(path+">");
                 string input=Console.ReadLine();
                 List<string> inputTokens= methods.tokenize(input);

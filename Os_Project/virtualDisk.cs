@@ -9,23 +9,23 @@ namespace Os_Project
 {
     internal class virtualDisk
     {
-        static string virtualDiskName = "virtualDisk";
+        static string virtualDiskName = "virtualDisk.txt";
 
         public static void initialize()
         {
-            if (!File.Exists(virtualDiskName))
+            if (File.Exists(virtualDiskName))
             {
-                FileStream fs = File.Create(virtualDiskName);
                 fatTable.readFatTable();
-                fs.Close();
             }
-            else if (File.Exists(virtualDiskName))
+            else if (!File.Exists(virtualDiskName))
             {
-                FileStream fs = File.Open(virtualDiskName, FileMode.Open);
+
+                FileStream fs = File.Create(virtualDiskName);
+
                 using (StreamWriter writer = new StreamWriter(fs))
                 {
                     for (int i = 0; i < 1024; i++)
-                        writer.Write((char)0);
+                        writer.Write('0');
                     
                     for (int i = 0; i < 1024 * 4; i++)
                         writer.Write('.');
