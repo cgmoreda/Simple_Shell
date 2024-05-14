@@ -18,7 +18,7 @@ namespace Os_Project
 
         public static void initialize()
         {
-           // File.Delete(virtualDiskName);
+            //File.Delete(virtualDiskName);
             if (File.Exists(virtualDiskName))
             {
                 fatTable.readFatTable();

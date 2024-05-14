@@ -13,16 +13,16 @@ namespace Os_Project
         public byte[] emptyData { get; set; }//12 byte[21,32]
         public int firstCluster { get; set; }//4 byte [17,20]
         public byte attribute { get; set; }// 1 byte =>[12,12]  0=>folder 1=>file
-        Directory parent;
-        public directoryEntry() { }
-        public directoryEntry(string Name, byte Attribute, int Size, int FirstCluster, Directory parent)
+        public Directory parent;
+        public directoryEntry() {}
+        public directoryEntry(string Name, byte Attribute, int Size, int FirstCluster, Directory _parent)
         {
             name = Name;
             attribute = Attribute;
             size = Size;
             emptyData = new byte[12];
             firstCluster = FirstCluster;
-            this.parent=parent;
+            this.parent=_parent;
         }
         public directoryEntry(string Name, byte Attribute, int Size, int FirstCluster)
         {
@@ -31,11 +31,20 @@ namespace Os_Project
             size = Size;
             firstCluster = FirstCluster;
         }
-
-        public directoryEntry(byte[] data)
+        public directoryEntry(byte[] data,Directory _parent)
         {
             directoryEntry x = byteToData(data);
             name = x.name;
+            size = x.size;
+            emptyData = x.emptyData;
+            firstCluster = x.firstCluster;
+            attribute = x.attribute;
+            parent = _parent;
+        }
+        public directoryEntry(byte[] data)
+        {
+            directoryEntry x = byteToData(data);
+            this.name = x.name;
             size = x.size;
             emptyData = x.emptyData;
             firstCluster = x.firstCluster;
@@ -63,7 +72,7 @@ namespace Os_Project
             return new directoryEntry
             {
 
-                name = Encoding.ASCII.GetString(data, 0, 11),
+                name = Encoding.ASCII.GetString(data, 0, 11).TrimEnd(),
                 attribute = data[12],
                 size = BitConverter.ToInt32(data, 13),
                 firstCluster = BitConverter.ToInt32(data, 17),

@@ -13,7 +13,7 @@ namespace Os_Project
             FileSystem.Init();
             while (true)
             {
-                fatTable.printFatTable();
+               // fatTable.printFatTable();
                 Console.Write(FileSystem.GetCurrentPath()+">");
                 string input=Console.ReadLine();
                 List<string> inputTokens= methods.tokenize(input);

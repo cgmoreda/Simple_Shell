@@ -8,11 +8,10 @@ namespace Os_Project
 {
     internal static class FileSystem
     {
-        public static string currentPath;
         public static Directory currentDirectory;
         private static Directory root;
         public static void Init()
-        {  
+        {
             root = new Directory("root", 0, 5, 0, null);
             if (fatTable.getValue(5) == 0)
             {
@@ -20,7 +19,6 @@ namespace Os_Project
             }
             root.readDirectory();
             currentDirectory = root;
-
         }
         public static void CreateFile(string name, string content, bool forceWrite = false)
         {
@@ -52,21 +50,30 @@ namespace Os_Project
         }
         public static string GetCurrentPath()
         {
-            return currentPath = currentDirectory.getFullPath();
+            return currentDirectory.getFullPath();
         }
         public static void ChangeDirectory(string path)
         {
-            if (path.Substring(0, 5)=="root:")
+            if (path.Length>=5&&path.Substring(0, 5)=="root:")
             {
                 currentDirectory = root;
             }
             else
             {
-                Directory d = (Directory)currentDirectory.getDirectory(path);
-                if (d != null)
-                    currentDirectory = d;
+                directoryEntry dirTo = currentDirectory.getDirectory(path);
+                if(dirTo == null)
+                {
+                    Console.WriteLine("Does Not Exist");
+                }
+                else if(dirTo.attribute==1)
+                {
+                       Console.WriteLine("Not a Directory");
+                }
                 else
-                    Console.WriteLine("Directory not found");
+                {
+                    Directory DIR = new Directory(dirTo);
+                    currentDirectory = DIR;
+                }
             }
         }
     }

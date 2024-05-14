@@ -85,7 +85,7 @@ namespace Os_Project.Shell
         internal static void pwd(List<string> inputTokens)
         {
             FileSystem.GetCurrentPath();
-            Console.WriteLine(inputTokens[0] + " " + FileSystem.currentPath);
+            Console.WriteLine(inputTokens[0] + " " + FileSystem.GetCurrentPath());
         }
 
         internal static void rename(List<string> args)
@@ -141,7 +141,13 @@ namespace Os_Project.Shell
 
         internal static void cd(List<string> args)
         {
-            throw new NotImplementedException();
+            if(args.Count()==1)
+            {
+                Console.WriteLine("Missing File Name");
+                return;
+            }
+            string dirName = args[1];
+            FileSystem.ChangeDirectory(dirName);
         }
 
         internal static void create(List<string> args)

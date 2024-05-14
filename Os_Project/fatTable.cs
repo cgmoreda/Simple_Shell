@@ -35,7 +35,7 @@ namespace Os_Project
         {
             for (int i = 1; i<=4; i++)
             {
-                Byte[] fatTableBytes = new Byte[1024*4];
+                Byte[] fatTableBytes = new Byte[1024];
                 Buffer.BlockCopy(fatTableArray, 1024*(i-1), fatTableBytes, 0, 1024);
                 virtualDisk.writeBlock(fatTableBytes, i);
             }

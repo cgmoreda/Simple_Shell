@@ -8,22 +8,33 @@ using System.Threading.Tasks;
 
 namespace Os_Project
 {
-    internal class Directory:directoryEntry
+    internal class Directory : directoryEntry
     {
         List<directoryEntry> directories;
-        Directory parent;
-        public Directory(){
-            parent = null;
+
+        public Directory()
+        {
+            base.parent = null;
             directories = new List<directoryEntry>();
         }
-        public Directory(string name, int size, int firstCluster, int attribute, Directory parent):base(name, (byte)attribute, size, firstCluster,parent)
+        public Directory(string name, int size, int firstCluster, int attribute, Directory parent) : base(name, (byte)attribute, size, firstCluster, parent)
         {
             directories = new List<directoryEntry>();
         }
-        public Directory(byte[] data, Directory parent):base(data)
+        public Directory(byte[] data, Directory parent) : base(data, parent)
         {
-            this.parent = parent;
             directories = new List<directoryEntry>();
+        }
+        public Directory(directoryEntry dir)
+        {
+            this.parent = dir.parent;
+            this.name = dir.name;
+            this.size = dir.size;
+            this.emptyData = dir.emptyData;
+            this.firstCluster = dir.firstCluster;
+            this.attribute = dir.attribute;
+            directories = new List<directoryEntry>();
+
         }
         public void readDirectory()
         {
@@ -40,16 +51,14 @@ namespace Os_Project
                     byte[] entryData = new byte[32];
                     Array.Copy(blockData, i * 32, entryData, 0, 32);
 
-                    
+
                     if (entryData[0]=='#')
                     {
                         break;
                     }
-                    directoryEntry entry = new directoryEntry(entryData);
+                    directoryEntry entry = new directoryEntry(entryData, this);
                     directories.Add(entry);
-
                 }
-
                 currentCluster = fatTable.getValue(currentCluster);
             }
 
@@ -61,6 +70,10 @@ namespace Os_Project
             int maxEntriesPerBlock = 1024 / 32;
 
             byte[] blockData = new byte[1024];
+            for (int i = 0; i < 1024; i++)
+            {
+                blockData[i] = (byte)'#';
+            }
             int entryIndex = 0; // Track the index of the current directory entry in the block
             var currentCluster = firstCluster;
             var PrevCluster = -1;
@@ -76,13 +89,17 @@ namespace Os_Project
 
                 if (entryIndex >= maxEntriesPerBlock)
                 {
-                    if(PrevCluster!=-1)
+                    if (PrevCluster!=-1)
                     {
                         fatTable.setValue(PrevCluster, currentCluster);
-                        fatTable.setValue(currentCluster,-1);
+                        fatTable.setValue(currentCluster, -1);
                     }
                     virtualDisk.writeBlock(blockData, currentCluster);
                     blockData = new byte[1024];
+                    for (int i = 0; i < 1024; i++)
+                    {
+                        blockData[i] = (byte)'#';
+                    }
                     entryIndex = 0;
                     PrevCluster = currentCluster;
                     currentCluster = fatTable.getAvailableBlock();
@@ -90,7 +107,7 @@ namespace Os_Project
                 }
             }
 
-           if (entryIndex > 0)
+            if (entryIndex > 0)
             {
                 virtualDisk.writeBlock(blockData, currentCluster);
                 fatTable.setValue(currentCluster, -1);
@@ -128,8 +145,9 @@ namespace Os_Project
         public void deleteDirectory()
         {
             fatTable.clearFatAt(firstCluster);
-            foreach (var d in directories){
-                if(d.attribute==0)
+            foreach (var d in directories)
+            {
+                if (d.attribute==0)
                 {
                     Directory x = (Directory)d;
                     x.deleteDirectory();
@@ -144,7 +162,7 @@ namespace Os_Project
         }
         public bool addFile(string name, string content)
         {
-            if(DirectoryExists(name))
+            if (DirectoryExists(name))
                 return false;
 
             directories.Add(new FFile(name, content.Length, fatTable.getAvailableBlock(), 1, this, content));
@@ -162,9 +180,8 @@ namespace Os_Project
         internal string getFullPath()
         {
             if (parent!=null)
-                return string.Join(parent.getFullPath(), "/", name);
-            return "root:";
-                    
+                return parent.getFullPath()+"/"+name;
+            return name+":";
         }
 
         internal List<string> getEntriesNames()
