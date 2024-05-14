@@ -90,12 +90,25 @@ namespace Os_Project.Shell
 
         internal static void rename(List<string> args)
         {
-            throw new NotImplementedException();
+            if(args.Count<3)
+            {
+                Console.WriteLine("Missing Paramaters");
+                return;
+            }
+            string fileNameOld = args[1];
+            string fileNameNew = args[2];
+            FileSystem.changeName(fileNameOld, fileNameNew);
         }
 
         internal static void rd(List<string> args)
         {
-            throw new NotImplementedException();
+            if(args.Count() == 1)
+            {
+                   Console.WriteLine("Missing File Name");
+                return;
+            }
+            string name = args[1];
+            FileSystem.DeleteDirectory(name);
         }
 
         internal static void md(List<string> args)
@@ -154,5 +167,6 @@ namespace Os_Project.Shell
         {
             throw new NotImplementedException();
         }
+
     }
 }

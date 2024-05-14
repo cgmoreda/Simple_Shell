@@ -10,7 +10,7 @@ namespace Os_Project
 {
     internal class Directory : directoryEntry
     {
-        List<directoryEntry> directories;
+        List<directoryEntry> ?directories;
 
         public Directory()
         {
@@ -136,8 +136,9 @@ namespace Os_Project
         }
         internal void removeDirectory(string name)
         {
-            Directory d = (Directory)directories.Find(x => x.name == name);
-            d.deleteDirectory();
+            directoryEntry d = directories.Find(x => x.name == name);
+            Directory D = new Directory(d);
+            D.deleteDirectory();
             directories.Remove(d);
 
             writeDirectory();
@@ -154,7 +155,7 @@ namespace Os_Project
                 }
             }
             directories.Clear();
-
+            parent.writeDirectory();
         }
         public directoryEntry getDirectory(string name)
         {

@@ -18,23 +18,7 @@ namespace Os_Project
         public FFile(byte[] data, Directory parent) : base(data)
         {
         }
-        public void ReadFile()
-        {
-            byte[] data = virtualDisk.readBlock(firstCluster);
-            directoryEntry x = byteToData(data);
-            this.name = x.name;
-            this.size = x.size;
-            this.emptyData = x.emptyData;
-            this.firstCluster = x.firstCluster;
-            this.attribute = x.attribute;
-            ReadFileData();
-        }
-        public void WriteFile()
-        {
-            byte[] data = dataToByte();
-            virtualDisk.writeBlock(data, firstCluster);
-            WriteFileData();
-        }
+
         public void ReadFileData()
         {
             int fc = fatTable.getValue(firstCluster);

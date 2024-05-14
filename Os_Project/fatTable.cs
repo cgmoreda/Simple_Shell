@@ -50,7 +50,7 @@ namespace Os_Project
         {
             List<int> chain = new List<int> { idx };
 
-            while (fatTableArray[idx] != -1)
+            while (idx!=0&&idx!=-1&&fatTableArray[idx] != -1)
             {
                 idx = fatTableArray[idx];
                 chain.Add(idx);

@@ -30,14 +30,6 @@ namespace Os_Project
             {
                 Shell.command.dir(inputTokens);
             }
-            else if(inputTokens[0]=="create")
-            {
-                Shell.command.create(inputTokens);
-            }
-            else if (inputTokens[0]=="dir")
-            {
-                Shell.command.dir(inputTokens);
-            }
             else if (inputTokens[0]=="copy")
             {
                 Shell.command.copy(inputTokens);
@@ -54,17 +46,13 @@ namespace Os_Project
             {
                 Shell.command.rd(inputTokens);
             }
-            else if (inputTokens[0]=="rename")
-            {
-                Shell.command.rename(inputTokens);
-            }
-            else if (inputTokens[0]=="type")
-            { 
-                Shell.command.pwd(inputTokens);
-            }
             else if (inputTokens[0] =="pwd")
             {
                 Shell.command.pwd(inputTokens);
+            }
+            else if (inputTokens[0] == "rename")
+            {
+                Shell.command.rename(inputTokens);
             }
             else
             {

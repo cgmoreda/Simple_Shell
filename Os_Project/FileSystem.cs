@@ -10,6 +10,10 @@ namespace Os_Project
     {
         public static Directory currentDirectory;
         private static Directory root;
+
+        public static string ExportPath { get; set; }
+        public static string ImportPath { get; set;}
+
         public static void Init()
         {
             root = new Directory("root", 0, 5, 0, null);
@@ -19,6 +23,10 @@ namespace Os_Project
             }
             root.readDirectory();
             currentDirectory = root;
+            ExportPath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Exports");
+            ImportPath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Imports");
+            if (!System.IO.Directory.Exists(ExportPath)) System.IO.Directory.CreateDirectory(ExportPath);
+            if (!System.IO.Directory.Exists(ImportPath)) System.IO.Directory.CreateDirectory(ImportPath);
         }
         public static void CreateFile(string name, string content, bool forceWrite = false)
         {
@@ -54,26 +62,45 @@ namespace Os_Project
         }
         public static void ChangeDirectory(string path)
         {
-            if (path.Length>=5&&path.Substring(0, 5)=="root:")
+            if (path=="..")
+            {
+                if(currentDirectory.parent!=null)
+                    currentDirectory = currentDirectory.parent;
+            }
+            else if (path.Length>=5&&path.Substring(0, 5)=="root:")
             {
                 currentDirectory = root;
             }
             else
             {
                 directoryEntry dirTo = currentDirectory.getDirectory(path);
-                if(dirTo == null)
+                if (dirTo == null)
                 {
                     Console.WriteLine("Does Not Exist");
                 }
-                else if(dirTo.attribute==1)
+                else if (dirTo.attribute==1)
                 {
-                       Console.WriteLine("Not a Directory");
+                    Console.WriteLine("Not a Directory");
                 }
                 else
                 {
                     Directory DIR = new Directory(dirTo);
                     currentDirectory = DIR;
                 }
+            }
+        }
+
+        internal static void changeName(string fileNameOld, string fileNameNew)
+        {
+            directoryEntry x = currentDirectory.getDirectory(fileNameOld);
+            if (x == null)
+            {
+                Console.WriteLine("File Not Found");
+                return;
+            }
+            else
+            {
+                currentDirectory.getDirectory(fileNameOld).name = fileNameNew;
             }
         }
     }
