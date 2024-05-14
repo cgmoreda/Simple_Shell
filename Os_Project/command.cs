@@ -82,5 +82,58 @@ namespace Os_Project.Shell
             Environment.Exit(0);
         }
 
+        internal static void type(List<string> inputTokens)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void rename(List<string> inputTokens)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void rd(List<string> inputTokens)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void md(List<string> inputTokens)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void del(List<string> inputTokens)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void copy(List<string> inputTokens)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void dir(List<string> inputTokens)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void cd(List<string> inputTokens)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void ls(List<string> inputTokens)
+        {
+            List<string> ls = FileSystem.currentDirectory.getEntries();
+            foreach(var item in ls)
+            {
+                Console.WriteLine(item);
+            }
+        }
+
+        internal static void create(List<string> inputTokens)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
