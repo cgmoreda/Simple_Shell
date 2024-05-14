@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Os_Project
+namespace Os_Project.Shell
 {
     static internal class command
     {
 
+        
         internal static void clear(List<string> args)
         {
             Console.Clear();
@@ -18,7 +19,7 @@ namespace Os_Project
 
 
             string command;
-            if (args.Count<2)
+            if (args.Count < 2)
             {
                 command = "defualt";
             }

@@ -13,8 +13,16 @@ namespace Os_Project
         public byte[] emptyData { get; set; }//12 byte[21,32]
         public int firstCluster { get; set; }//4 byte [17,20]
         public byte attribute { get; set; }// 1 byte =>[12,12]
-
+        Directory parent;
         public directoryEntry() { }
+        public directoryEntry(string Name, byte Attribute, int Size, int FirstCluster, Directory parent)
+        {
+            name = Name;
+            attribute = Attribute;
+            size = Size;
+            firstCluster = FirstCluster;
+            this.parent=parent;
+        }
         public directoryEntry(string Name, byte Attribute, int Size, int FirstCluster)
         {
             name = Name;

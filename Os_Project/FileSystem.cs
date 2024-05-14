@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Os_Project.Shell
+namespace Os_Project
 {
     internal static class FileSystem
     {
@@ -12,9 +12,10 @@ namespace Os_Project.Shell
         static Directory currentDirectory;
         public static void init()
         {
-            if(fatTable.getValue(5)==0){
-                
-                currentDirectory= new Directory("root", 0, 0, 5, null);
+            if (fatTable.getValue(5) == 0)
+            {
+
+                currentDirectory = new Directory("root", 0, 0, 5, null);
                 fatTable.setValue(5, -1);
             }
             else
@@ -22,11 +23,11 @@ namespace Os_Project.Shell
                 currentDirectory = new Directory("root", 0, 0, 5, null);
                 currentDirectory.ReadDirectory();
             }
-            
+
         }
-        public static void CreateFile(string name)
+        public static void CreateFile(string name,string content)
         {
-            // Create a new file
+
         }
         public static void DeleteFile(string name)
         {
