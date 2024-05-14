@@ -26,10 +26,10 @@ namespace Os_Project
                 {
                     for (int i = 0; i < 1024; i++)
                         writer.Write('0');
-                    
+
                     for (int i = 0; i < 1024 * 4; i++)
                         writer.Write('.');
-                
+
                     for (int i = 0; i < 1024 * 1024 - (1024 * 5); i++)
                         writer.Write('#');
                 }
@@ -46,7 +46,7 @@ namespace Os_Project
                 fs.Write(data, 0, 1024);
             }
         }
-        internal static void writeBlocks(byte[] data, int idx,int numberOfBlocks)
+        internal static void writeBlocks(byte[] data, int idx, int numberOfBlocks)
         {
             using (FileStream fs = File.Open(virtualDiskName, FileMode.Open))
             {
@@ -65,8 +65,8 @@ namespace Os_Project
             return data;
         }
 
-        internal static byte[] readBlocks(int idx,int numberOfBlocks)
-        { 
+        internal static byte[] readBlocks(int idx, int numberOfBlocks)
+        {
             byte[] data = new byte[1024*numberOfBlocks];
             using (FileStream fs = File.Open(virtualDiskName, FileMode.Open))
             {
@@ -74,6 +74,25 @@ namespace Os_Project
                 fs.Read(data, 0, 1024*numberOfBlocks);
             }
             return data;
+        }
+        internal static void WriteData(int firstCluster, byte[] data)
+        {
+            fatTable.clearFatAt(firstCluster);
+            var current = firstCluster;
+            for (int i = 0; i<data.Length; i+=32)
+            {
+                if(current!=firstCluster)
+                    fatTable.setValue(firstCluster, current);
+                
+                // take 32 bit bunch and put it in the cluster
+                byte[] temp = new byte[32];
+                Array.Copy(data, i, temp, 0, 32);
+                writeBlock(temp, current);
+                firstCluster = current;
+                current = fatTable.getAvailableBlock();
+            }
+            fatTable.setValue(current, -1);
+            fatTable.writeFatTable();
         }
     }
 }

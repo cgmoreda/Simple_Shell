@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,24 +22,27 @@ namespace Os_Project
             writeFatTable();
         }
 
-        internal static void readFatTable() {
-            byte[] data = virtualDisk.readBlocks(1,4);
+        internal static void readFatTable()
+        {
+            byte[] data = virtualDisk.readBlocks(1, 4);
             Buffer.BlockCopy(data, 0, fatTableArray, 0, 1024*4);
         }
-        internal static void writeFatTable() {
+        internal static void writeFatTable()
+        {
             Byte[] fatTableBytes = new Byte[1024*4];
             Buffer.BlockCopy(fatTableArray, 0, fatTableBytes, 0, fatTableBytes.Length);
-            virtualDisk.writeBlocks(fatTableBytes,1,4);
+            virtualDisk.writeBlocks(fatTableBytes, 1, 4);
         }
-        internal static void printFatTable() { 
+        internal static void printFatTable()
+        {
             for (int i = 0; i < 1024; i++)
                 Console.WriteLine($"Fat[{i}] => {fatTableArray[i]}");
-            
+
         }
         internal static List<int> getChain(int idx)
         {
-            List<int> chain = new List<int>();
-            chain.Add(idx);
+            List<int> chain = new List<int> { idx };
+
             while (fatTableArray[idx] != -1)
             {
                 idx = fatTableArray[idx];
@@ -47,22 +51,35 @@ namespace Os_Project
             return chain;
         }
 
-        internal static int getAvailableBlock() {
+        internal static int getAvailableBlock()
+        {
             return Array.FindIndex(fatTableArray, x => x == 0);
         }
-        internal static int getValue(int idx) {
+        internal static int getValue(int idx)
+        {
             return fatTableArray[idx];
         }
-        internal static void setValue(int idx,int val) {
+        internal static void setValue(int idx, int val)
+        {
             fatTableArray[idx] = val;
             writeFatTable();
         }
-        internal static int getNumberOfFreeBlocks() { 
+        internal static int getNumberOfFreeBlocks()
+        {
             return fatTableArray.Count(x => x == 0);
         }
-        public static int getFreeSpace() {
+        public static int getFreeSpace()
+        {
             return getNumberOfFreeBlocks() * 1024;
         }
-        
+        public static void clearFatAt(int idx)
+        {
+            List<int> chain = getChain(idx);
+            foreach (var x in chain)
+            {
+                fatTableArray[x] = 0;
+            }
+            writeFatTable();
+        }
     }
 }
