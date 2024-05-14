@@ -4,21 +4,20 @@ namespace Os_Project
 {
     internal class Program
     {
-        static string path = "root";
+
         static void Main(string[] args)
         {
             Console.Clear();
 
             virtualDisk.initialize();
-            fatTable.printFatTable();
             FileSystem.Init();
-            path = FileSystem.GetCurrentPath();
             while (true)
             {
-                Console.Write(path+">");
+                fatTable.printFatTable();
+                Console.Write(FileSystem.GetCurrentPath()+">");
                 string input=Console.ReadLine();
                 List<string> inputTokens= methods.tokenize(input);
-              
+                methods.getToFunction(inputTokens);
             }
         }
        

@@ -12,7 +12,10 @@ namespace Os_Project
     {
         List<directoryEntry> directories;
         Directory parent;
-        public Directory(){}
+        public Directory(){
+            parent = null;
+            directories = new List<directoryEntry>();
+        }
         public Directory(string name, int size, int firstCluster, int attribute, Directory parent):base(name, (byte)attribute, size, firstCluster,parent)
         {
             directories = new List<directoryEntry>();
@@ -22,64 +25,105 @@ namespace Os_Project
             this.parent = parent;
             directories = new List<directoryEntry>();
         }
-        public void ReadDirectory()
+        public void readDirectory()
         {
-            byte[] data = virtualDisk.readBlock(firstCluster);
-            directoryEntry x =byteToData(data);
-            this.name = x.name;
-            this.size = x.size;
-            this.emptyData = x.emptyData;
-            this.firstCluster = x.firstCluster;
-            this.attribute = x.attribute;
-            var fc = firstCluster;
-            while(fc!=-1)
+            int maxEntriesPerBlock = 1024 / 32;
+
+            var currentCluster = firstCluster;
+            directories.Clear();
+            while (currentCluster != -1)
             {
-                fc = fatTable.getValue(fc);
-                data = virtualDisk.readBlock(fc);
-                x = byteToData(data);
-                Directory d = new Directory(x.name, x.size, x.firstCluster, x.attribute, this);
-                directories.Add(d);
+                byte[] blockData = virtualDisk.readBlock(currentCluster);
+
+                for (int i = 0; i < maxEntriesPerBlock; i++)
+                {
+                    byte[] entryData = new byte[32];
+                    Array.Copy(blockData, i * 32, entryData, 0, 32);
+
+                    
+                    if (entryData[0]=='#')
+                    {
+                        break;
+                    }
+                    directoryEntry entry = new directoryEntry(entryData);
+                    directories.Add(entry);
+
+                }
+
+                currentCluster = fatTable.getValue(currentCluster);
             }
 
         }
+
+
         public void writeDirectory()
         {
-            byte[] data = dataToByte();
-            virtualDisk.writeBlock(data, firstCluster);
+            int maxEntriesPerBlock = 1024 / 32;
 
-            int fc;
-            int nc = firstCluster;
-            foreach (var d in directories)
+            byte[] blockData = new byte[1024];
+            int entryIndex = 0; // Track the index of the current directory entry in the block
+            var currentCluster = firstCluster;
+            var PrevCluster = -1;
+            fatTable.clearFatAt(firstCluster);
+            fatTable.setValue(firstCluster, -1);
+            // Write directory entries to the block
+            foreach (var directory in directories)
             {
-             
-                fc = fatTable.getAvailableBlock();
-                fatTable.setValue(nc, fc);
-                fatTable.setValue(fc,-1);
-                nc = fc;
-                data = d.dataToByte();
-                virtualDisk.writeBlock(data, fc);
+                byte[] entryData = directory.dataToByte();
+                int offset = entryIndex * 32;
+                Array.Copy(entryData, 0, blockData, offset, 32);
+                entryIndex++;
+
+                if (entryIndex >= maxEntriesPerBlock)
+                {
+                    if(PrevCluster!=-1)
+                    {
+                        fatTable.setValue(PrevCluster, currentCluster);
+                        fatTable.setValue(currentCluster,-1);
+                    }
+                    virtualDisk.writeBlock(blockData, currentCluster);
+                    blockData = new byte[1024];
+                    entryIndex = 0;
+                    PrevCluster = currentCluster;
+                    currentCluster = fatTable.getAvailableBlock();
+
+                }
             }
+
+           if (entryIndex > 0)
+            {
+                virtualDisk.writeBlock(blockData, currentCluster);
+                fatTable.setValue(currentCluster, -1);
+            }
+
         }
+
+
         public void addDirectory(Directory d)
         {
             directories.Add(d);
+            writeDirectory();
         }
 
         public void addDirectory(string name)
         {
-            Directory temp = new Directory(name, 32, fatTable.getAvailableBlock(), 0, this);
+            Directory temp = new Directory(name, 0, 0, 0, this);
             directories.Add(temp);
+            writeDirectory();
         }
         public void removeDirectory(Directory d)
         {
             d.deleteDirectory();
             directories.Remove(d);
+            writeDirectory();
         }
         internal void removeDirectory(string name)
         {
             Directory d = (Directory)directories.Find(x => x.name == name);
             d.deleteDirectory();
             directories.Remove(d);
+
+            writeDirectory();
         }
         public void deleteDirectory()
         {
@@ -92,6 +136,7 @@ namespace Os_Project
                 }
             }
             directories.Clear();
+
         }
         public directoryEntry getDirectory(string name)
         {
@@ -102,7 +147,7 @@ namespace Os_Project
             if(DirectoryExists(name))
                 return false;
 
-            directories.Add(new File(name, content.Length, fatTable.getAvailableBlock(), 1, this, content));
+            directories.Add(new FFile(name, content.Length, fatTable.getAvailableBlock(), 1, this, content));
             return true;
         }
         public void removeFile(string name)
@@ -116,12 +161,25 @@ namespace Os_Project
 
         internal string getFullPath()
         {
-            return string.Join(parent.getFullPath(),"/", name);
+            if (parent!=null)
+                return string.Join(parent.getFullPath(), "/", name);
+            return "root:";
+                    
         }
 
-        internal List<string> getEntries()
+        internal List<string> getEntriesNames()
         {
-            throw new NotImplementedException();
+            List<string> ret = new List<string>();
+            foreach (var d in directories)
+            {
+                ret.Add(d.name);
+            }
+            return ret;
+        }
+
+        internal List<directoryEntry> getEntries()
+        {
+            return directories;
         }
     }
 }

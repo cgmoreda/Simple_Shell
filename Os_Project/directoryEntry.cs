@@ -12,7 +12,7 @@ namespace Os_Project
         public int size { get; set; }// 4 byte =>[13,16]
         public byte[] emptyData { get; set; }//12 byte[21,32]
         public int firstCluster { get; set; }//4 byte [17,20]
-        public byte attribute { get; set; }// 1 byte =>[12,12]
+        public byte attribute { get; set; }// 1 byte =>[12,12]  0=>folder 1=>file
         Directory parent;
         public directoryEntry() { }
         public directoryEntry(string Name, byte Attribute, int Size, int FirstCluster, Directory parent)
@@ -20,6 +20,7 @@ namespace Os_Project
             name = Name;
             attribute = Attribute;
             size = Size;
+            emptyData = new byte[12];
             firstCluster = FirstCluster;
             this.parent=parent;
         }
@@ -49,9 +50,11 @@ namespace Os_Project
             Encoding.ASCII.GetBytes(Name).CopyTo(ret,0);
             ret[12] = attribute;
             BitConverter.GetBytes(size).CopyTo(ret,13);
-            BitConverter.GetBytes(size).CopyTo(ret, 17);
-            emptyData.CopyTo(ret, 21);
-
+            BitConverter.GetBytes(firstCluster).CopyTo(ret, 17);
+            if (emptyData != null && emptyData.Length <= ret.Length - 21)
+            {
+                emptyData.CopyTo(ret, 21);
+            }
             return ret;
         }
 

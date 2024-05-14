@@ -8,21 +8,17 @@ namespace Os_Project
 {
     internal static class FileSystem
     {
-        static string currentPath;
-        static Directory currentDirectory;
-        static Directory root;
-        public static void init()
-        {
+        public static string currentPath;
+        public static Directory currentDirectory;
+        private static Directory root;
+        public static void Init()
+        {  
+            root = new Directory("root", 0, 5, 0, null);
             if (fatTable.getValue(5) == 0)
             {
-                root = new Directory("root", 0, 0, 5, null);
                 fatTable.setValue(5, -1);
             }
-            else
-            {
-                root= new Directory("root", 0, 0, 5, null);
-                root.ReadDirectory();
-            }
+            root.readDirectory();
             currentDirectory = root;
 
         }
@@ -56,14 +52,13 @@ namespace Os_Project
         }
         public static string GetCurrentPath()
         {
-            return currentDirectory.getFullPath();
+            return currentPath = currentDirectory.getFullPath();
         }
         public static void ChangeDirectory(string path)
         {
             if (path.Substring(0, 5)=="root:")
             {
                 currentDirectory = root;
-                
             }
             else
             {

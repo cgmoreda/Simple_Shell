@@ -12,30 +12,37 @@ namespace Os_Project
         private static int[] fatTableArray = new int[1024];
         internal static void initialize()
         {
+
+            Array.Fill(fatTableArray, 0, 5, 1019);
             fatTableArray[0] = -1;
             fatTableArray[1] = 2;
             fatTableArray[2] = 3;
             fatTableArray[3] = 4;
             fatTableArray[4] = -1;
 
-            Array.Fill(fatTableArray, 0, 5, 1019);
             writeFatTable();
         }
 
         internal static void readFatTable()
         {
-            byte[] data = virtualDisk.readBlocks(1, 4);
-            Buffer.BlockCopy(data, 0, fatTableArray, 0, 1024*4);
+            for (int i = 1; i<=4; i++)
+            {
+                byte[] data = virtualDisk.readBlock(1);
+                Buffer.BlockCopy(data, 0, fatTableArray, 1024*(i-1), 1024);
+            }
         }
         internal static void writeFatTable()
         {
-            Byte[] fatTableBytes = new Byte[1024*4];
-            Buffer.BlockCopy(fatTableArray, 0, fatTableBytes, 0, fatTableBytes.Length);
-            virtualDisk.writeBlocks(fatTableBytes, 1, 4);
+            for (int i = 1; i<=4; i++)
+            {
+                Byte[] fatTableBytes = new Byte[1024*4];
+                Buffer.BlockCopy(fatTableArray, 1024*(i-1), fatTableBytes, 0, 1024);
+                virtualDisk.writeBlock(fatTableBytes, i);
+            }
         }
-        internal static void printFatTable()
+        internal static void printFatTable(int l = 0, int r = 10)
         {
-            for (int i = 0; i < 1024; i++)
+            for (int i = l; i <= r; i++)
                 Console.WriteLine($"Fat[{i}] => {fatTableArray[i]}");
 
         }

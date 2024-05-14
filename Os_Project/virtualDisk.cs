@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-// using file reading and writing
+using System.IO;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Os_Project
 {
@@ -13,6 +18,7 @@ namespace Os_Project
 
         public static void initialize()
         {
+           // File.Delete(virtualDiskName);
             if (File.Exists(virtualDiskName))
             {
                 fatTable.readFatTable();
@@ -40,18 +46,20 @@ namespace Os_Project
         }
         internal static void writeBlock(byte[] data, int idx)
         {
-            using (FileStream fs = File.Open(virtualDiskName, FileMode.Open))
+            // make data2 = data padded with '#' till 1024
+            byte[] data2 = new byte[1024];
+            for (int i = 0; i < 1024; i++)
             {
-                fs.Seek(idx * 1024, SeekOrigin.Begin);
-                fs.Write(data, 0, 1024);
+                if (i < data.Length)
+                    data2[i] = data[i];
+                else
+                    data2[i] = (byte)'#';
             }
-        }
-        internal static void writeBlocks(byte[] data, int idx, int numberOfBlocks)
-        {
+
             using (FileStream fs = File.Open(virtualDiskName, FileMode.Open))
             {
                 fs.Seek(idx * 1024, SeekOrigin.Begin);
-                fs.Write(data, 0, 1024*numberOfBlocks);
+                fs.Write(data2, 0, 1024);
             }
         }
         internal static byte[] readBlock(int idx)
@@ -59,31 +67,21 @@ namespace Os_Project
             byte[] data = new byte[1024];
             using (FileStream fs = File.Open(virtualDiskName, FileMode.Open))
             {
-                fs.Seek(idx * 1024, SeekOrigin.Begin);
+                fs.Seek( idx * 1024, SeekOrigin.Begin);
                 fs.Read(data, 0, 1024);
             }
             return data;
         }
 
-        internal static byte[] readBlocks(int idx, int numberOfBlocks)
-        {
-            byte[] data = new byte[1024*numberOfBlocks];
-            using (FileStream fs = File.Open(virtualDiskName, FileMode.Open))
-            {
-                fs.Seek(idx * 1024, SeekOrigin.Begin);
-                fs.Read(data, 0, 1024*numberOfBlocks);
-            }
-            return data;
-        }
         internal static void WriteData(int firstCluster, byte[] data)
         {
             fatTable.clearFatAt(firstCluster);
             var current = firstCluster;
             for (int i = 0; i<data.Length; i+=32)
             {
-                if(current!=firstCluster)
+                if (current!=firstCluster)
                     fatTable.setValue(firstCluster, current);
-                
+
                 // take 32 bit bunch and put it in the cluster
                 byte[] temp = new byte[32];
                 Array.Copy(data, i, temp, 0, 32);

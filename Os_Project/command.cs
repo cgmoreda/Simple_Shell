@@ -82,56 +82,69 @@ namespace Os_Project.Shell
             Environment.Exit(0);
         }
 
-        internal static void type(List<string> inputTokens)
+        internal static void pwd(List<string> inputTokens)
+        {
+            FileSystem.GetCurrentPath();
+            Console.WriteLine(inputTokens[0] + " " + FileSystem.currentPath);
+        }
+
+        internal static void rename(List<string> args)
         {
             throw new NotImplementedException();
         }
 
-        internal static void rename(List<string> inputTokens)
+        internal static void rd(List<string> args)
         {
             throw new NotImplementedException();
         }
 
-        internal static void rd(List<string> inputTokens)
+        internal static void md(List<string> args)
         {
-            throw new NotImplementedException();
-        }
-
-        internal static void md(List<string> inputTokens)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static void del(List<string> inputTokens)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static void copy(List<string> inputTokens)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static void dir(List<string> inputTokens)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static void cd(List<string> inputTokens)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static void ls(List<string> inputTokens)
-        {
-            List<string> ls = FileSystem.currentDirectory.getEntries();
-            foreach(var item in ls)
+            if (args.Count!=2)
             {
-                Console.WriteLine(item);
+                help(new List<string>{ "help","md"});
+                return;
+            }
+            string name = args[1];
+            FileSystem.CreateDirectory(name);
+        }
+
+        internal static void del(List<string> args)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void copy(List<string> args)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void dir(List<string> args)
+        {
+            if (args.Count==1)
+            {
+                List<string> ls = FileSystem.currentDirectory.getEntriesNames();
+                foreach (var item in ls)
+                {
+                    Console.WriteLine(item);
+                }
+            }
+            else if(args.Contains("a")||args.Contains("all"))
+            {
+                List<directoryEntry> directoryEntries = FileSystem.currentDirectory.getEntries();
+                foreach (var item in directoryEntries)
+                {
+                    Console.WriteLine(item);
+                }
             }
         }
 
-        internal static void create(List<string> inputTokens)
+        internal static void cd(List<string> args)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void create(List<string> args)
         {
             throw new NotImplementedException();
         }

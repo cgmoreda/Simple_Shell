@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace Os_Project
 {
-    internal class File : directoryEntry
+    internal class FFile : directoryEntry
     {
         string content { get; set; }
-        public File() { }
-        public File(string name, int size, int firstCluster, int attribute, Directory parent, string content) : base(name, (byte)attribute, size, firstCluster, parent)
+        public FFile() { }
+        public FFile(string name, int size, int firstCluster, int attribute, Directory parent, string content) : base(name, (byte)attribute, size, firstCluster, parent)
         {
             this.content=content;
             WriteFile();
         }
-        public File(byte[] data, Directory parent) : base(data)
+        public FFile(byte[] data, Directory parent) : base(data)
         {
         }
         public void ReadFile()
