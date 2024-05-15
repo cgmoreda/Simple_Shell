@@ -43,7 +43,7 @@ namespace Os_Project
 
         public void ReadFileData()
         {
-            int fc = fatTable.getValue(firstCluster);
+            int fc = firstCluster;
             content ="";
             while (fc != -1)
             {
@@ -55,26 +55,24 @@ namespace Os_Project
         }
         public void WriteFileData()
         {
-            int fc;
-            int nc =fatTable.getValue(firstCluster);
+            int pr = -1;
+            int cf =firstCluster;
             int i = 0;
+            fatTable.setValue(cf,-1);
             while (i < content.Length)
             {
                 byte[] data = new byte[1024];
                 Encoding.ASCII.GetBytes(content.Substring(i, Math.Min(1024, content.Length - i))).CopyTo(data, 0);
-                if (nc == -1)
-                {
-                    fc = fatTable.getAvailableBlock();
-                    fatTable.setValue(nc, fc);
-                    fatTable.setValue(fc, -1);
-                    nc = fc;
-                }
-                else
-                {
-                    fc = fatTable.getValue(nc);
-                }
-                virtualDisk.writeBlock(data, fc);
+               
+
+                virtualDisk.writeBlock(data, cf);
                 i += 1024;
+                if(pr!=-1)
+                {
+                    fatTable.setValue(pr, cf);
+                }
+                pr = cf;
+                cf = fatTable.getAvailableBlock();
             }
         }
         public void deleteFile()
