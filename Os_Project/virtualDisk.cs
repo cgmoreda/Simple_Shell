@@ -18,7 +18,6 @@ namespace Os_Project
 
         public static void initialize()
         {
-            //File.Delete(virtualDiskName);
             if (File.Exists(virtualDiskName))
             {
                 fatTable.readFatTable();
@@ -67,30 +66,11 @@ namespace Os_Project
             byte[] data = new byte[1024];
             using (FileStream fs = File.Open(virtualDiskName, FileMode.Open))
             {
-                fs.Seek( idx * 1024, SeekOrigin.Begin);
+                fs.Seek(idx * 1024, SeekOrigin.Begin);
                 fs.Read(data, 0, 1024);
             }
             return data;
         }
 
-        internal static void WriteData(int firstCluster, byte[] data)
-        {
-            fatTable.clearFatAt(firstCluster);
-            var current = firstCluster;
-            for (int i = 0; i<data.Length; i+=32)
-            {
-                if (current!=firstCluster)
-                    fatTable.setValue(firstCluster, current);
-
-                // take 32 bit bunch and put it in the cluster
-                byte[] temp = new byte[32];
-                Array.Copy(data, i, temp, 0, 32);
-                writeBlock(temp, current);
-                firstCluster = current;
-                current = fatTable.getAvailableBlock();
-            }
-            fatTable.setValue(current, -1);
-            fatTable.writeFatTable();
-        }
-    }
+    }       
 }

@@ -54,6 +54,18 @@ namespace Os_Project
             {
                 Shell.command.rename(inputTokens);
             }
+            else if (inputTokens[0]=="import")
+            {
+                Shell.command.Import(inputTokens);
+            }
+            else if (inputTokens[0]=="export")
+            {
+                Shell.command.Export(inputTokens);
+            }
+            else if (inputTokens[0] == "type")
+            {
+                Shell.command.type(inputTokens);
+            }
             else
             {
                 Console.WriteLine("Unkown command, use help to know supported commands");

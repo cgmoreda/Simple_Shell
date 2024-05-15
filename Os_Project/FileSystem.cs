@@ -103,5 +103,71 @@ namespace Os_Project
                 currentDirectory.getDirectory(fileNameOld).name = fileNameNew;
             }
         }
+
+        static public void ExportFile(string fileName)
+        {
+            directoryEntry ffile = currentDirectory.getDirectory(fileName);
+            if (ffile!=null)
+            {
+                FFile entry = new FFile(ffile);
+                string content = entry.content;
+                string filePath = System.IO.Path.Combine(ExportPath, fileName);
+                System.IO.File.WriteAllText(filePath, content);
+                Console.WriteLine($"File '{fileName}' exported successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"File not found.");
+            }
+        }
+
+        static public void ImportFile(string fileName)
+        {
+            string filePath = System.IO.Path.Combine(ImportPath, fileName);
+            if (!System.IO.File.Exists(filePath))
+            {
+                Console.WriteLine("File not found.");
+                return;
+            }
+
+            string content = System.IO.File.ReadAllText(filePath);
+            WriteFile(fileName, content);
+        }
+
+        static public void WriteFile(string fileName, string content)
+        {
+            directoryEntry temp = currentDirectory.getDirectory(fileName); ;
+            if (temp!=null)
+            {
+                FFile entry = new FFile(temp);
+                entry.content = content;
+                entry.WriteFileData();
+            }
+            else
+            {
+
+                FFile newFile = new FFile(fileName,currentDirectory);
+                currentDirectory.addDirectory(newFile);
+                newFile.WriteFileData();            
+            }
+        
+            
+        }
+
+        internal static void type(string name)
+        {
+            directoryEntry ffile = currentDirectory.getDirectory(name);
+            if(ffile!=null)
+            {
+                FFile fl = new FFile(ffile);
+                fl.ReadFileData();
+                Console.WriteLine(fl.content);
+
+            }
+            else
+            {
+                Consolve.j
+            }
+        }
     }
 }

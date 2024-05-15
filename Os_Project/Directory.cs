@@ -116,7 +116,7 @@ namespace Os_Project
         }
 
 
-        public void addDirectory(Directory d)
+        public void addDirectory(directoryEntry d)
         {
             directories.Add(d);
             writeDirectory();
@@ -198,6 +198,16 @@ namespace Os_Project
         internal List<directoryEntry> getEntries()
         {
             return directories;
+        }
+
+        internal int Search(string fileName)
+        {
+            for (int i = 0; i < directories.Count; i++)
+            {
+                if (directories[i].name == fileName)
+                    return i;
+            }
+            return -1;
         }
     }
 }

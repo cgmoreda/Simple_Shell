@@ -8,15 +8,37 @@ namespace Os_Project
 {
     internal class FFile : directoryEntry
     {
-        string content { get; set; }
+        public string content { get; set; }
         public FFile() { }
         public FFile(string name, int size, int firstCluster, int attribute, Directory parent, string content) : base(name, (byte)attribute, size, firstCluster, parent)
         {
             this.content=content;
-            WriteFile();
+            WriteFileData();
         }
         public FFile(byte[] data, Directory parent) : base(data)
         {
+        }
+
+        public FFile(directoryEntry ffile)
+        {
+            this.parent = ffile.parent;
+            this.name = ffile.name;
+            this.size = ffile.size;
+            this.emptyData = ffile.emptyData;
+            this.firstCluster = ffile.firstCluster;
+            this.attribute = ffile.attribute;
+            content = "";
+        }
+
+        public FFile(string fileName, Directory currentDirectory):base()
+        {
+            this.name = fileName;
+            this.parent = currentDirectory;
+            this.size = 0;
+            this.attribute = 1;
+            this.firstCluster = fatTable.getAvailableBlock();
+            fatTable.setValue(firstCluster, -1);
+            content = "";
         }
 
         public void ReadFileData()
@@ -29,6 +51,7 @@ namespace Os_Project
                 content += Encoding.ASCII.GetString(data);
                 fc = fatTable.getValue(fc);
             }
+            content.TrimEnd();
         }
         public void WriteFileData()
         {

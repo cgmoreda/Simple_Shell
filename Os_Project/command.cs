@@ -168,5 +168,37 @@ namespace Os_Project.Shell
             throw new NotImplementedException();
         }
 
+        internal static void Import(List<string> args)
+        {
+            if(args.Count()<=1)
+            {
+                Console.WriteLine("missing arguments");
+                return;
+            }
+            string name = args[1];
+            FileSystem.ImportFile(name);
+        }
+
+        internal static void Export(List<string> args)
+        {
+            if (args.Count()<=1)
+            {
+                Console.WriteLine("missing arguments");
+                return;
+            }
+            string name = args[1];
+            FileSystem.ExportFile(name);
+        }
+
+        internal static void type(List<string> args)
+        {
+            if (args.Count < 2)
+            {
+                Console.WriteLine("Missing File Name");
+                return;
+            }
+            string name = args[1];
+            FileSystem.type(name);
+        }
     }
 }
